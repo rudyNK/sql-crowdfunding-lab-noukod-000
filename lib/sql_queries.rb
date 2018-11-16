@@ -6,46 +6,38 @@
 
 # Make sure each ruby method returns a string containing a valid SQL statement.
 
-def selects_the_titles_of_all_projects_and_their_pledge_amounts
-"SELECT projects.title, SUM(pledges.amount) FROM projects
-    INNER JOIN pledges
-      ON projects.id = pledges.project_id
-    GROUP BY projects.title;"
+def selects_the_titles_of_all_projects_and_their_pledge_amounts_alphabetized_by_name
+"SELECT p.title, SUM(pl.amount) FROM projects AS p
+JOIN pledges AS pl ON p.id = pl.project_id
+GROUP BY p.title;"
 end
 
-def selects_the_user_name_age_and_pledge_amount_for_all_pledges
-"SELECT users.name, users.age, SUM(pledges.amount) FROM users
-    INNER JOIN pledges
-      ON users.id = pledges.user_id
-    GROUP BY users.name;"
+def selects_the_user_name_age_and_pledge_amount_for_all_pledges_alphabetized_by_name
+"SELECT u.name, u.age, SUM(pl.amount) FROM users as u
+JOIN pledges AS pl ON u.id = pl.user_id
+GROUP BY u.name;"
 end
 
 def selects_the_titles_and_amount_over_goal_of_all_projects_that_have_met_their_funding_goal
-"SELECT projects.title, (projects.funding_goal - SUM(pledges.amount)) * -1 AS over_goal FROM projects
-    INNER JOIN pledges
-      ON projects.id = pledges.project_id
-    GROUP BY projects.title
-    HAVING over_goal >= 0;"
+"SELECT p.title, SUM(pl.amount)-p.funding_goal FROM projects AS p
+JOIN pledges AS pl ON p.id = pl.project_id
+GROUP BY p.title HAVING SUM(pl.amount)-p.funding_goal >= 0; "
 end
 
-def selects_user_names_and_amounts_of_all_pledges_grouped_by_name_then_orders_them_by_the_amount
-"SELECT users.name, SUM(pledges.amount) AS total_pledges FROM users
-    INNER JOIN pledges
-      ON users.id = pledges.user_id
-    GROUP BY users.name
-    ORDER BY total_pledges;"
+def selects_user_names_and_amounts_of_all_pledges_grouped_by_name_then_orders_them_by_the_amount_and_users_name
+"SELECT u.name, SUM(pl.amount) FROM users AS u
+JOIN pledges AS pl ON u.id = pl.user_id
+GROUP BY u.name ORDER BY SUM(pl.amount);"
 end
 
 def selects_the_category_names_and_pledge_amounts_of_all_pledges_in_the_music_category
-"SELECT projects.category, pledges.amount FROM projects
-    INNER JOIN pledges
-      ON projects.id = pledges.project_id
-    WHERE category = 'music';"
+"SELECT p.category, pl.amount FROM projects AS p
+JOIN pledges AS pl ON p.id = pl.project_id
+WHERE p.category = 'music';"
 end
 
-def selects_the_category_name_and_the_sum_total_of_the_all_its_pledges_for_the_book_category
-"SELECT projects.category, SUM(pledges.amount) AS total_pledges FROM projects
-    INNER JOIN pledges
-      ON projects.id = pledges.project_id
-    WHERE category = 'books';"
+def selects_the_category_name_and_the_sum_total_of_the_all_its_pledges_for_the_books_category
+  "SELECT p.category, SUM(pl.amount) FROM projects AS p
+  JOIN pledges AS pl ON p.id = pl.project_id
+  GROUP BY p.category HAVING p.category = 'books';"
 end
